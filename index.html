@@ -10,7 +10,7 @@
         h2 { color: #5a2d82; text-align: center; margin-top: 0; }
         p.desc { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px 5px; border: 1px solid #5a2d82; background: #fff; color: #5a2d82; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .tab-btn { flex: 1; padding: 12px 5px; border: 1px solid #5a2d82; background: #fff; color: #5a2d82; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; -webkit-tap-highlight-color: transparent; }
         .tab-btn.active { background: #5a2d82; color: #fff; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #333; }
@@ -27,11 +27,11 @@
     <h2>Calculadora de Riesgo Preventivo</h2>
     <p class="desc">Descubre si estás en zona de riesgo silencioso y evalúa tu salud</p>
 
-    <!-- Selector de Módulo Corregido -->
+    <!-- Selector de Módulo -->
     <div class="tabs">
-        <button class="tab-btn active" type="button" onclick="cambiarModulo('Renal', this)">🫘 Renal</button>
-        <button class="tab-btn" type="button" onclick="cambiarModulo('Cardiovascular', this)">🫀 Cardiovascular</button>
-        <button class="tab-btn" type="button" onclick="cambiarModulo('Hepatico', this)">🫐 Hepático</button>
+        <button class="tab-btn active" id="btn-renal" type="button">🫘 Renal</button>
+        <button class="tab-btn" id="btn-cardio" type="button">🫀 Cardiovascular</button>
+        <button class="tab-btn" id="btn-hepatico" type="button">🫐 Hepático</button>
     </div>
 
     <form id="riskForm">
@@ -84,25 +84,36 @@
 <script>
     let moduloActual = 'Renal';
 
-    function cambiarModulo(modulo, elemento) {
-        moduloActual = modulo;
-        document.getElementById('moduloSeleccionado').value = modulo;
-        
-        // Cambiar estilo de los botones
-        const btns = document.querySelectorAll('.tab-btn');
-        btns.forEach(b => b.classList.remove('active'));
-        if (elemento) elemento.classList.add('active');
+    const btnRenal = document.getElementById('btn-renal');
+    const btnCardio = document.getElementById('btn-cardio');
+    const btnHepatico = document.getElementById('btn-hepatico');
+    const labelPregunta = document.getElementById('labelPregunta');
 
-        // Cambiar texto de la pregunta según el módulo
-        const label = document.getElementById('labelPregunta');
-        if (modulo === 'Renal') {
-            label.innerText = "¿Hace cuánto no realizas un examen específico de función renal (creatinina, TFG)?";
-        } else if (modulo === 'Cardiovascular') {
-            label.innerText = "¿Hace cuánto no revisas tu perfil lipídico completo y nivel de inflamación vascular?";
-        } else if (modulo === 'Hepatico') {
-            label.innerText = "¿Conoces si tu hígado tiene acumulación grasa o alteración de enzimas hepáticas?";
-        }
+    function activarBoton(btnActivo) {
+        [btnRenal, btnCardio, btnHepatico].forEach(b => b.classList.remove('active'));
+        btnActivo.classList.add('active');
     }
+
+    btnRenal.addEventListener('click', function() {
+        moduloActual = 'Renal';
+        document.getElementById('moduloSeleccionado').value = 'Renal';
+        activarBoton(btnRenal);
+        labelPregunta.innerText = "¿Hace cuánto no realizas un examen específico de función renal (creatinina, TFG)?";
+    });
+
+    btnCardio.addEventListener('click', function() {
+        moduloActual = 'Cardiovascular';
+        document.getElementById('moduloSeleccionado').value = 'Cardiovascular';
+        activarBoton(btnCardio);
+        labelPregunta.innerText = "¿Hace cuánto no revisas tu perfil lipídico completo y nivel de inflamación vascular?";
+    });
+
+    btnHepatico.addEventListener('click', function() {
+        moduloActual = 'Hepático';
+        document.getElementById('moduloSeleccionado').value = 'Hepático';
+        activarBoton(btnHepatico);
+        labelPregunta.innerText = "¿Conoces si tu hígado tiene acumulación grasa o alteración de enzimas hepáticas?";
+    });
 
     document.getElementById('riskForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -111,7 +122,7 @@
         const edad = document.getElementById('edad').value;
         const respuesta = document.getElementById('preguntaClave').value;
 
-        let mensaje = Hola <strong>${nombre}</strong>. A tus <strong>${edad} años</strong>, tu resultado en el módulo <strong>${moduloActual}</strong> indica un <strong>NIVEL ALTO DE INCERTIDUMBRE PREVENTIVA</strong>.;
+        let mensaje = `Hola <strong>${nombre}</strong>. A tus <strong>${edad} años</strong>, tu resultado en el módulo <strong>${moduloActual}</strong> indica un <strong>NIVEL ALTO DE INCERTIDUMBRE PREVENTIVA</strong>.`;
 
         if (respuesta !== "Reciente") {
             mensaje += ` No contar con chequeos periódicos o desconocer qué panel de laboratorio solicitar incrementa el riesgo de complicaciones silenciosas.`;
