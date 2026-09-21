@@ -27,11 +27,11 @@
     <h2>Calculadora de Riesgo Preventivo</h2>
     <p class="desc">Descubre si estás en zona de riesgo silencioso y evalúa tu salud</p>
 
-    <!-- Selector de Módulo -->
+    <!-- Selector de Módulo Corregido -->
     <div class="tabs">
-        <button class="tab-btn active" type="button" onclick="seleccionarModulo('Renal', event)">🫘 Renal</button>
-        <button class="tab-btn" type="button" onclick="seleccionarModulo('Cardiovascular', event)">🫀 Cardiovascular</button>
-        <button class="tab-btn" type="button" onclick="seleccionarModulo('Hepatico', event)">🫐 Hepático</button>
+        <button class="tab-btn active" type="button" onclick="cambiarModulo('Renal', this)">🫘 Renal</button>
+        <button class="tab-btn" type="button" onclick="cambiarModulo('Cardiovascular', this)">🫀 Cardiovascular</button>
+        <button class="tab-btn" type="button" onclick="cambiarModulo('Hepatico', this)">🫐 Hepático</button>
     </div>
 
     <form id="riskForm">
@@ -84,14 +84,16 @@
 <script>
     let moduloActual = 'Renal';
 
-    function seleccionarModulo(modulo, evt) {
+    function cambiarModulo(modulo, elemento) {
         moduloActual = modulo;
         document.getElementById('moduloSeleccionado').value = modulo;
         
+        // Cambiar estilo de los botones
         const btns = document.querySelectorAll('.tab-btn');
         btns.forEach(b => b.classList.remove('active'));
-        if (evt) evt.target.classList.add('active');
+        if (elemento) elemento.classList.add('active');
 
+        // Cambiar texto de la pregunta según el módulo
         const label = document.getElementById('labelPregunta');
         if (modulo === 'Renal') {
             label.innerText = "¿Hace cuánto no realizas un examen específico de función renal (creatinina, TFG)?";
