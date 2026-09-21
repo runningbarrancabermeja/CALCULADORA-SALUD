@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Riesgo Preventivo</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f5f3f9; margin: 0; padding: 20px; }
+        .card { max-width: 520px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { color: #5a2d82; text-align: center; margin-top: 0; }
+        p.desc { text-align: center; color: #666; font-size: 14px; margin-bottom: 20px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px 5px; border: 1px solid #5a2d82; background: #fff; color: #5a2d82; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .tab-btn.active { background: #5a2d82; color: #fff; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; color: #333; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .btn-calc { width: 100%; background-color: #6c35a6; color: white; border: none; padding: 14px; font-size: 16px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-calc:hover { background-color: #552788; }
+        #resultadoBox { display: none; margin-top: 20px; padding: 18px; background-color: #fdf2f2; border-left: 5px solid #d9534f; border-radius: 8px; }
+        .btn-agendar { display: block; width: 100%; text-align: center; background-color: #28a745; color: white; text-decoration: none; padding: 14px 0; margin-top: 15px; border-radius: 8px; font-weight: bold; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Calculadora de Riesgo Preventivo</h2>
+    <p class="desc">Descubre si estás en zona de riesgo silencioso y evalúa tu salud</p>
+
+    <!-- Selector de Módulo -->
+    <div class="tabs">
+        <button class="tab-btn active" type="button" onclick="seleccionarModulo('Renal', event)">🫘 Renal</button>
+        <button class="tab-btn" type="button" onclick="seleccionarModulo('Cardiovascular', event)">🫀 Cardiovascular</button>
+        <button class="tab-btn" type="button" onclick="seleccionarModulo('Hepatico', event)">🫐 Hepático</button>
+    </div>
+
+    <form id="riskForm">
+        <input type="hidden" id="moduloSeleccionado" value="Renal">
+
+        <div class="form-group">
+            <label>Nombre Completo:</label>
+            <input type="text" id="nombre" required placeholder="Tu nombre">
+        </div>
+
+        <div class="form-group">
+            <label>Edad (Años):</label>
+            <input type="number" id="edad" required placeholder="Ej. 45">
+        </div>
+
+        <div class="form-group">
+            <label>WhatsApp / Teléfono:</label>
+            <input type="tel" id="telefono" required placeholder="Ej. +123456789">
+        </div>
+
+        <div class="form-group">
+            <label>Correo Electrónico:</label>
+            <input type="email" id="correo" required placeholder="correo@ejemplo.com">
+        </div>
+
+        <!-- Pregunta dinámica según el módulo -->
+        <div class="form-group">
+            <label id="labelPregunta">¿Hace cuánto no realizas un examen específico de función renal (creatinina, TFG)?</label>
+            <select id="preguntaClave" required>
+                <option value="Nunca">Nunca me lo he realizado</option>
+                <option value="Mas de 1 ano">Hace más de 1 año</option>
+                <option value="No se que examen es">No sé qué exámenes necesito</option>
+                <option value="Reciente">Hace menos de 6 meses</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-calc">Calcular Mi Nivel de Riesgo</button>
+    </form>
+
+    <div id="resultadoBox">
+        <h3 style="color: #d9534f; margin-top:0;">⚠️ Alerta de Riesgo Preventivo Detectada</h3>
+        <p id="textoResultado"></p>
+        <p><strong>Paso Siguiente Recomendado:</strong> Para conocer la lista exacta de exámenes médicos que debes realizarte y evaluar tus factores particulares, agenda una consulta preventiva.</p>
+        
+        <!-- Enlace a Google Calendar / Calendly con pago -->
+        <a id="linkPagoAgenda" class="btn-agendar" href="https://calendar.google.com/" target="_blank">Agendar Consulta y Evaluación</a>
+    </div>
+</div>
+
+<script>
+    let moduloActual = 'Renal';
+
+    function seleccionarModulo(modulo, evt) {
+        moduloActual = modulo;
+        document.getElementById('moduloSeleccionado').value = modulo;
+        
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        if (evt) evt.target.classList.add('active');
+
+        const label = document.getElementById('labelPregunta');
+        if (modulo === 'Renal') {
+            label.innerText = "¿Hace cuánto no realizas un examen específico de función renal (creatinina, TFG)?";
+        } else if (modulo === 'Cardiovascular') {
+            label.innerText = "¿Hace cuánto no revisas tu perfil lipídico completo y nivel de inflamación vascular?";
+        } else if (modulo === 'Hepatico') {
+            label.innerText = "¿Conoces si tu hígado tiene acumulación grasa o alteración de enzimas hepáticas?";
+        }
+    }
+
+    document.getElementById('riskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById('nombre').value;
+        const edad = document.getElementById('edad').value;
+        const respuesta = document.getElementById('preguntaClave').value;
+
+        let mensaje = Hola <strong>${nombre}</strong>. A tus <strong>${edad} años</strong>, tu resultado en el módulo <strong>${moduloActual}</strong> indica un <strong>NIVEL ALTO DE INCERTIDUMBRE PREVENTIVA</strong>.;
+
+        if (respuesta !== "Reciente") {
+            mensaje += ` No contar con chequeos periódicos o desconocer qué panel de laboratorio solicitar incrementa el riesgo de complicaciones silenciosas.`;
+        } else {
+            mensaje += ` Aunque tengas chequeos recientes, es crucial interpretar los valores en conjunto con tu historia clínica actual.`;
+        }
+
+        document.getElementById('textoResultado').innerHTML = mensaje;
+        document.getElementById('riskForm').style.display = 'none';
+        document.getElementById('resultadoBox').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
